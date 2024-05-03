@@ -32,4 +32,14 @@ public class PlanetService {
     Example<Planet> query = QueryBuilder.makeExample(new Planet(climate, terrain));
     return planetRepository.findAll(query);
   }
+
+  public void delete(Long id) {
+    planetRepository.findById(id)
+            .ifPresentOrElse(
+                    planet -> planetRepository.delete(planet),
+                    () -> {
+                      throw new PlanetNotFoundException("id: " + id);
+                    }
+            );
+  }
 }

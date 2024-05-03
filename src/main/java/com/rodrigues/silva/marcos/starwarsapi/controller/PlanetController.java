@@ -44,4 +44,10 @@ public class PlanetController {
 
     return ResponseEntity.ok(planets);
   }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity delete(@PathVariable Long id) {
+    planetService.delete(id);
+    return ResponseEntity.noContent().build();
+  }
 }
