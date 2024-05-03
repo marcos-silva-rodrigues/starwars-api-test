@@ -1,6 +1,5 @@
 package com.rodrigues.silva.marcos.starwarsapi.domain;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +17,13 @@ public class PlanetService {
 
   public Planet getById(Long id) {
     return planetRepository.findById(id)
-            .orElseThrow(() -> new PlanetNotFoundException(id));
+            .orElseThrow(() -> new PlanetNotFoundException("id: " + id));
   }
+
+  public Planet getByName(String name) {
+    return planetRepository.findByName(name)
+            .orElseThrow(() -> new PlanetNotFoundException("name: " + name));
+  }
+
+
 }

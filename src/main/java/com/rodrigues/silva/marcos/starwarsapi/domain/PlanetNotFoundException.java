@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class PlanetNotFoundException extends RuntimeException {
 
-  public PlanetNotFoundException(Long id) {
-    super("Planet not found with id: " + id);
+  public PlanetNotFoundException(String paramMessage) {
+    super("Planet not found with " + paramMessage);
   }
 }

@@ -2,7 +2,6 @@ package com.rodrigues.silva.marcos.starwarsapi.controller;
 
 import com.rodrigues.silva.marcos.starwarsapi.domain.Planet;
 import com.rodrigues.silva.marcos.starwarsapi.domain.PlanetService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +25,12 @@ public class PlanetController {
   @GetMapping("/{id}")
   public ResponseEntity<Planet> getById(@PathVariable Long id) {
     var planet = planetService.getById(id);
+    return ResponseEntity.status(HttpStatus.OK).body(planet);
+  }
+
+  @GetMapping("/name/{name}")
+  public ResponseEntity<Planet> getByName(@PathVariable String name) {
+    Planet planet = planetService.getByName(name);
     return ResponseEntity.status(HttpStatus.OK).body(planet);
   }
 }
