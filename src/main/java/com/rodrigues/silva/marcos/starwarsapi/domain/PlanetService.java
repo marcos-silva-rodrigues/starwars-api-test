@@ -28,7 +28,7 @@ public class PlanetService {
             .orElseThrow(() -> new PlanetNotFoundException("name: " + name));
   }
 
-  public List<Planet> list(String terrain, String climate) {
+  public List<Planet> list(String climate, String terrain) {
     Example<Planet> query = QueryBuilder.makeExample(new Planet(climate, terrain));
     return planetRepository.findAll(query);
   }
