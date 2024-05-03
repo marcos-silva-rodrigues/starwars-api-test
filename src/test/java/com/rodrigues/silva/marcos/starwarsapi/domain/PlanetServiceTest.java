@@ -14,6 +14,7 @@ import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.INVA
 import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.PLANET;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,10 +58,28 @@ public class PlanetServiceTest {
 
   @Test
   public void findPlanet_ByUnexistingId_ThrowsCustomException() {
-    when(planetRepository.findById(1L))
+    when(planetRepository.findById(anyLong()))
             .thenReturn(Optional.empty());
 
     assertThrows(PlanetNotFoundException.class,
             () -> planetService.getById(1L));
+  }
+
+  @Test
+  public void findPlanet_ByExistingName_ReturnsPlanet() {
+    when(planetRepository.findByName(anyString()))
+            .thenReturn(Optional.of(PLANET));
+
+    var sut =  planetService.getByName("Tatooine");
+
+    assertEquals(PLANET, sut);
+  }
+
+  @Test
+  public void findPlanet_ByUnexistingName_ReturnsPlanet() {
+    when(planetRepository.findByName(anyString()))
+            .thenReturn(Optional.empty());
+
+    assertThrows(PlanetNotFoundException.class, () -> planetService.getByName("Tatooine"));
   }
 }
