@@ -18,6 +18,7 @@ import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.INVA
 import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.PLANET;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -109,5 +110,21 @@ public class PlanetServiceTest {
     List<Planet> planets = planetService.list("", "");
 
     assertTrue(planets.isEmpty());
+  }
+
+  @Test
+  public void removePlanet_ByExistingId_DoesNotThrowAnyException() {
+    when(planetRepository.findById(anyLong()))
+            .thenReturn(Optional.of(PLANET));
+
+    assertDoesNotThrow(() -> planetService.delete(1L));
+  }
+
+  @Test
+  public void removePlanet_ByUnexistingId_ThrowsException() {
+    when(planetRepository.findById(anyLong()))
+            .thenReturn(Optional.empty());
+
+    assertThrows(PlanetNotFoundException.class, () -> planetService.delete(1L));
   }
 }
