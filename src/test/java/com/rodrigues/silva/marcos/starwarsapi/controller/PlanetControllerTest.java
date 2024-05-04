@@ -15,6 +15,7 @@ import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -61,5 +62,16 @@ public class PlanetControllerTest {
                     .content(objectMapper.writeValueAsString(INVALID_PLANET))
                     .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isUnprocessableEntity());
+  }
+
+  @Test
+  public void createPlanet_WithExistingName_ReturnsConflicts() throws Exception {
+    when(planetService.create(any())).thenThrow(DataIntegrityViolationException.class);
+
+    mockMvc.perform(post("/planets")
+                    .content(objectMapper.writeValueAsString(PLANET))
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isConflict());
+
   }
 }
