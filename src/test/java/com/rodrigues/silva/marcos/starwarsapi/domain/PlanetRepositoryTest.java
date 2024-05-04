@@ -1,15 +1,13 @@
 package com.rodrigues.silva.marcos.starwarsapi.domain;
 
-import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.INVALID_PLANET;
-import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.PLANET;
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.assertj.core.api.Assert;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+
+import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.INVALID_PLANET;
+import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.PLANET;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 public class PlanetRepositoryTest {
@@ -43,5 +41,17 @@ public class PlanetRepositoryTest {
       planetRepository.save(INVALID_PLANET);
     });
 
+  }
+
+  @Test
+  public void createPlanet_WithExistingName_ThrowsException() {
+    Planet planet = testEntityManager.persistFlushFind(PLANET);
+    testEntityManager.detach(planet);
+
+    planet.setId(null);
+
+    assertThrows(RuntimeException.class, () -> {
+      planetRepository.save(planet);
+    });
   }
 }
