@@ -1,6 +1,7 @@
 package com.rodrigues.silva.marcos.starwarsapi.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.util.Objects;
@@ -12,8 +13,17 @@ public class Planet {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(nullable = false)
+  @NotEmpty
   private String name;
+
+  @Column(nullable = false)
+  @NotEmpty
   private String climate;
+
+  @Column(nullable = false)
+  @NotEmpty
   private String terrain;
 
   public Planet(String name, String climate, String terrain) {
@@ -25,6 +35,10 @@ public class Planet {
   public Planet(String climate, String terrain) {
     this.climate = climate;
     this.terrain = terrain;
+  }
+
+  public Planet() {
+
   }
 
   public Long getId() {
