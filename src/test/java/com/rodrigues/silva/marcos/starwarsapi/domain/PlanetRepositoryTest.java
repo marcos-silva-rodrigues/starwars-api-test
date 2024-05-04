@@ -1,9 +1,12 @@
 package com.rodrigues.silva.marcos.starwarsapi.domain;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+
+import java.util.Optional;
 
 import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.INVALID_PLANET;
 import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.PLANET;
@@ -17,6 +20,11 @@ public class PlanetRepositoryTest {
 
   @Autowired
   private TestEntityManager testEntityManager;
+
+  @AfterEach
+  public void afterEach() {
+    PLANET.setId(null);
+  }
 
   @Test
   public void createPlanet_WithValidData_ReturnsPlanet() {
@@ -53,5 +61,22 @@ public class PlanetRepositoryTest {
     assertThrows(RuntimeException.class, () -> {
       planetRepository.save(planet);
     });
+  }
+
+  @Test
+  public void getPlanet_ByExistingId_ReturnsPlanet() {
+    Planet planet = testEntityManager.persistFlushFind(PLANET);
+
+    Optional<Planet> sut = planetRepository.findById(planet.getId());
+
+    assertTrue(sut.isPresent());
+    assertEquals(sut.get(), planet);
+  }
+
+  @Test
+  public void getPlanet_ByUnexistingId_ReturnsPlanet() {
+    Optional<Planet> sut = planetRepository.findById(1L);
+
+    assertTrue(sut.isEmpty());
   }
 }

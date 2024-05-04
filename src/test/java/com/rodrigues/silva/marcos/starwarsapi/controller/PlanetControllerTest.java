@@ -1,27 +1,23 @@
 package com.rodrigues.silva.marcos.starwarsapi.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rodrigues.silva.marcos.starwarsapi.domain.Planet;
+import com.rodrigues.silva.marcos.starwarsapi.domain.PlanetNotFoundException;
 import com.rodrigues.silva.marcos.starwarsapi.domain.PlanetService;
 import org.junit.jupiter.api.Test;
-
-import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.INVALID_PLANET;
-import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.PLANET;
-
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
-import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.INVALID_PLANET;
+import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.PLANET;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -72,6 +68,26 @@ public class PlanetControllerTest {
                     .content(objectMapper.writeValueAsString(PLANET))
                     .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isConflict());
+
+  }
+
+  @Test
+  public void getPlanet_ByExistingId_ReturnsPlanet() throws Exception {
+    when(planetService.getById(anyLong())).thenReturn(PLANET);
+
+    mockMvc.perform(get("/planets/1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").value(PLANET));
+  }
+
+  @Test
+  public void getPlanet_ByUnexistingId_ReturnsPlanet() throws Exception {
+    when(planetService.getById(anyLong())).thenThrow(PlanetNotFoundException.class);
+
+    mockMvc.perform(get("/planets/1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
 
   }
 }
