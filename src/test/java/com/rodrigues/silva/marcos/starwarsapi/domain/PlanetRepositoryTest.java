@@ -5,11 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Example;
+import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
 import java.util.Optional;
 
-import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.INVALID_PLANET;
-import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.PLANET;
+import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -76,6 +78,47 @@ public class PlanetRepositoryTest {
   @Test
   public void getPlanet_ByUnexistingId_ReturnsPlanet() {
     Optional<Planet> sut = planetRepository.findById(1L);
+
+    assertTrue(sut.isEmpty());
+  }
+
+  @Test
+  public void getPlanet_ByExistingName_ReturnsPlanet() throws Exception {
+    Planet planet = testEntityManager.persistFlushFind(PLANET);
+
+    Optional<Planet> sut = planetRepository.findByName(planet.getName());
+
+    assertTrue(sut.isPresent());
+    assertEquals(sut.get(), planet);
+  }
+
+  @Test
+  public void getPlanet_ByUnexistingName_ReturnsPlanet() throws Exception {
+    Optional<Planet> sut = planetRepository.findByName("tatooine");
+
+    assertTrue(sut.isEmpty());
+
+  }
+
+  @Test
+  @Sql(scripts = "/import_planets.sql")
+  public void listPlanets_ReturnsFilteredPlanets() throws Exception {
+    Example<Planet> exampleWithFilter = QueryBuilder.makeExample(new Planet(TATOOINE.getClimate(), TATOOINE.getTerrain()));
+    Example<Planet> exampleWithoutFilter = QueryBuilder.makeExample(new Planet());
+
+    List<Planet> sutWithFilters = planetRepository.findAll(exampleWithFilter);
+    List<Planet> sutWithoutFilters = planetRepository.findAll(exampleWithoutFilter);
+
+    assertEquals(TATOOINE, sutWithFilters.get(0));
+    assertEquals(1, sutWithFilters.size());
+
+    assertEquals(3, sutWithoutFilters.size());
+  }
+
+  @Test
+  public void listPlanets_ReturnsNoPlanets() throws Exception {
+    Example<Planet> exampleWithoutFilter = QueryBuilder.makeExample(new Planet());
+    var sut = planetRepository.findAll(exampleWithoutFilter);
 
     assertTrue(sut.isEmpty());
   }

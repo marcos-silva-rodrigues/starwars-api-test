@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
-import java.util.Objects;
-
 @Entity
 @Table(name = "planets")
 public class Planet {
@@ -37,8 +35,13 @@ public class Planet {
     this.terrain = terrain;
   }
 
-  public Planet() {
+  public Planet() { }
 
+  public Planet(Long id, String name, String climate, String terrain) {
+    this.id = id;
+    this.name = name;
+    this.climate = climate;
+    this.terrain = terrain;
   }
 
   public Long getId() {
