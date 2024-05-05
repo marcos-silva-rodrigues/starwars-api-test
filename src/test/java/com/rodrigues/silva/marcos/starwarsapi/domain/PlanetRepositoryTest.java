@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Example;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -13,6 +14,11 @@ import java.util.Optional;
 
 import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DataJpaTest
 public class PlanetRepositoryTest {
@@ -122,4 +128,16 @@ public class PlanetRepositoryTest {
 
     assertTrue(sut.isEmpty());
   }
+
+  @Test
+  public void removePlanet_WithExitingId_ReturnsNoContent() throws Exception {
+    Planet planet = testEntityManager.persistFlushFind(PLANET);
+
+    planetRepository.deleteById(planet.getId());
+    Planet sut = testEntityManager.find(Planet.class, planet.getId());
+
+    assertNull(sut);
+
+  }
+
 }

@@ -18,9 +18,9 @@ import java.util.List;
 import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -145,5 +145,19 @@ public class PlanetControllerTest {
                     .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(0)));
+  }
+
+  @Test
+  public void removePlanet_WithExitingId_ReturnsNoContent() throws Exception {
+    mockMvc.perform(delete("/planets/1"))
+            .andExpect(status().isNoContent());
+  }
+
+  @Test
+  public void removePlanet_WithUnexistingId_ReturnsNotFound() throws Exception {
+    doThrow(PlanetNotFoundException.class).when(planetService).delete(anyLong());
+
+    mockMvc.perform(delete("/planets/1"))
+            .andExpect(status().isNotFound());
   }
 }
