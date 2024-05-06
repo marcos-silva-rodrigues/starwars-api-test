@@ -2,6 +2,9 @@ package com.rodrigues.silva.marcos.starwarsapi.domain;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -11,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.rodrigues.silva.marcos.starwarsapi.common.PlanetConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,6 +38,15 @@ public class PlanetRepositoryTest {
     PLANET.setId(null);
   }
 
+  private static Stream<Arguments> providesInvalidPlanets() {
+    return Stream.of(
+            Arguments.of(new Planet(null, null, null)),
+            Arguments.of(new Planet(null, "climate", "terrain")),
+            Arguments.of(new Planet("name", null, "terrain")),
+            Arguments.of(new Planet("name", "climate", null))
+    );
+  }
+
   @Test
   public void createPlanet_WithValidData_ReturnsPlanet() {
     Planet planet = planetRepository.save(PLANET);
@@ -45,12 +58,12 @@ public class PlanetRepositoryTest {
     assertEquals(sut.getName(), planet.getName());
   }
 
-  @Test
-  public void createPlanet_WithInvalidData_ThrowsException() {
-    Planet emptyPlanet = new Planet();
+  @ParameterizedTest
+  @MethodSource("providesInvalidPlanets")
+  public void createPlanet_WithInvalidData_ThrowsException(Planet planet) {
 
     assertThrows(RuntimeException.class, () -> {
-      planetRepository.save(emptyPlanet);
+      planetRepository.save(planet);
     });
 
     assertThrows(RuntimeException.class, () -> {
