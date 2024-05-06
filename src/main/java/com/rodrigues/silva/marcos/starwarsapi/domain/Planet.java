@@ -1,5 +1,6 @@
 package com.rodrigues.silva.marcos.starwarsapi.domain;
 
+import com.rodrigues.silva.marcos.starwarsapi.jacoco.ExcludeFromJacocoGenerationReport;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -81,4 +82,14 @@ public class Planet {
     return EqualsBuilder.reflectionEquals(o, this);
   }
 
+  @ExcludeFromJacocoGenerationReport
+  @Override
+  public String toString() {
+    return "Planet{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", climate='" + climate + '\'' +
+            ", terrain='" + terrain + '\'' +
+            '}';
+  }
 }
